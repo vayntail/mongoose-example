@@ -3,6 +3,12 @@
 const express = require('express');
 // create your application
 const app = express();
+// set port
+const dotenv = require('dotenv');
+dotenv.config()
+
+// import db/conn.js
+const db = require('./db/conn');
 // Import the body-parser package
 // This package contains middleware that can handle 
 // the parsing of many different types of data,
@@ -14,7 +20,7 @@ const jsxViewEngine = require('jsx-view-engine');
 // method-override is used to be able to do more than GET and POST
 const methodOverride = require('method-override');
 // you have to have a port defined so that the application has somewhere to listen
-const PORT = 3000;
+const PORT = process.env.PORT || 5050;
 
 // import the data from the fake database files
 const fruits = require('./data/fruits');
