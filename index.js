@@ -23,7 +23,8 @@ const methodOverride = require('method-override');
 const PORT = process.env.PORT || 5050;
 
 // import the data from the fake database files
-const fruits = require('./data/fruits');
+// const fruits = require('./data/fruits');
+const Fruit = require('./models/fruits');
 
 // set up the view engine to be able to use it
 app.set('view engine', 'jsx');
@@ -102,57 +103,69 @@ app.get('/', (req, res) => {
     );
 })
 
-app.get('/params', (req, res) => {
-    console.log(req.params);
-    res.send(
-        '<h1>Route Parameters Example</h1>'
-    )
-})
-
-app.get('/params/:p1', (req, res) => {
-    console.log(req.params);
-    res.send(
-        `<h1>Route Parameters Example</h1><p>There is one parameter: ${req.params.p1}</p>`
-    )
-})
-
-app.get('/params/:p1/explanations', (req, res) => {
-    console.log(req.params);
-    res.send(
-        `<h1>This is where I explain ${req.params.p1} </h1> `
-    )
-
-})
-
-app.get('/params/:p1/:p2', (req, res) => {
-    console.log(req.params);
-    res.send(
-        `<h1>Route Parameters Example</h1><p>There are two parameters: ${req.params.p1} and ${req.params.p2}</p>`
-    )
-})
-
 app.get('/index', (req, res) => {
     res.send(
         '<h1>This is an index</h1>'
     )
 })
 
-app.get('/demo', (req, res) => {
-    res.render('Demo')
-})
+
 
 // ***** ABOVE HERE are NON-API routes
 
 // ***** BELOW is what you would typically see in an API with a clear split 
 // *****        between frontend and backend
+
+// add a seed route temporarily
+app.get('/api/fruits/seed', async (req, res) => {
+    try {
+        await Fruit.create([
+            {
+                name: 'grapefruit',
+                color: 'pink',
+                readyToEat: true
+            },
+            {
+                name: 'grapes',
+                color: 'purple',
+                readyToEat: true
+            },
+            {
+                name: 'apple',
+                color: 'green',
+                readyToEat: false
+            },
+            {
+                name: 'fig',
+                color: 'yellow',
+                readyToEat: true
+            },
+            {
+                name: 'grapes',
+                color: 'green',
+                readyToEat: false
+            },
+        ])
+
+        res.status(200).redirect('/api/fruits');
+    } catch (err) {
+        res.status(400).send(err);
+    }
+ })
+
 // INDEX
 // this is called an index route, where you can see all of the data
 // THIS is one version of READ
 // READ many
 // this is only practical when you have small amounts of data
 // but you you can also use an index route and limit the number of responses
-app.get('/api/fruits', (req, res) => {
-    res.json(fruits);
+app.get('/api/fruits', async (req, res) => {
+    try {
+        const foundFruits = await Fruit.find({});
+        res.status(200).json(foundFruits);
+    } catch (err) {
+        res.status(400).send(err);
+    }
 })
 
 // N - NEW - allows a user to input a new fruit
